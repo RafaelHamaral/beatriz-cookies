@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureAdminTwoFactor;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\PreventSensitiveCaching;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ShareRestrictedNotifications;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(SecurityHeaders::class);
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'admin.2fa' => EnsureAdminTwoFactor::class,

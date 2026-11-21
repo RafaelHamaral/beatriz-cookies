@@ -31,9 +31,9 @@ php artisan test
 
 Os testes usam SQLite em memória e senhas geradas pela factory. Eles não usam a senha do `.env`.
 
-## Próxima etapa
+## Estado atual
 
-Revisão final de segurança e validação dos fluxos completos. A configuração de produção está em `docs/producao.md`.
+As cinco etapas do MVP foram implementadas. Antes de publicar, execute a validação manual em navegador e siga `docs/producao.md`. O resultado técnico da última revisão está em `docs/REVISAO_SEGURANCA.md`.
 
 ## Etapa 3 — carrinho e pedidos
 

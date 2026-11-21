@@ -9,9 +9,11 @@ A área restrita só deve ir ao ar com estes pontos definidos no ambiente do ser
 - Banco, e-mail e qualquer segredo somente em variáveis de ambiente
 - `SESSION_SECURE_COOKIE=true` (o código também força o cookie seguro quando `APP_ENV=production`)
 - `SESSION_ENCRYPT=true`
+- `SESSION_HTTP_ONLY=true`
 - `SESSION_SAME_SITE=lax`
 - Document root em `public/`
 - HTTPS na frente da aplicação. Se houver proxy, configure os proxies confiáveis antes de publicar
+- As respostas incluem CSP, bloqueio de iframe, proteção contra sniffing e política de permissões. Em HTTPS de produção, a aplicação também envia HSTS por um ano
 - `MAIL_MAILER` real. O valor `log` é só para desenvolvimento e grava o link de redefinição em `storage/logs`
 - Não execute `php artisan db:seed --class=AdminUserSeeder`. Ele recusa qualquer ambiente que não seja `local`
 - Não copie `ADMIN_EMAIL` nem `ADMIN_PASSWORD` para o servidor. O primeiro administrador de produção deve ser criado por um procedimento próprio, fora desse seeder

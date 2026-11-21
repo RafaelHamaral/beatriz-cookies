@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MessageController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\UserController;
@@ -10,7 +11,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Auth\TwoFactorSetupController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductImageController;
@@ -23,12 +26,12 @@ Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.inde
 Route::get('/catalogo/{category:slug}', [CatalogController::class, 'category'])->name('catalog.category');
 Route::get('/produtos/{product:slug}', ProductPageController::class)->name('products.show');
 Route::get('/midia/{image:public_id}', ProductImageController::class)->name('products.image');
-Route::get('/contato', [ContactController::class, 'create'])->name('contact.create');
-Route::post('/contato', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
-Route::get('/avaliar', [ReviewController::class, 'create'])->name('reviews.create');
-Route::post('/avaliar', [ReviewController::class, 'store'])->middleware('throttle:5,1')->name('reviews.store');
+Route::get('/contato', [ContactController::class, 'create'])->middleware('no.store')->name('contact.create');
+Route::post('/contato', [ContactController::class, 'store'])->middleware(['throttle:5,1', 'no.store'])->name('contact.store');
+Route::get('/avaliar', [ReviewController::class, 'create'])->middleware('no.store')->name('reviews.create');
+Route::post('/avaliar', [ReviewController::class, 'store'])->middleware(['throttle:5,1', 'no.store'])->name('reviews.store');
 
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest', 'no.store'])->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 
@@ -96,15 +99,15 @@ Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications'])
 
 // Session locking serializes cart/checkout submissions from the same customer.
 Route::middleware('no.store')->group(function () {
-    Route::get('/carrinho', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index')->block();
-    Route::put('/carrinho/{product}', [\App\Http\Controllers\CartController::class, 'update'])->whereNumber('product')->middleware('throttle:60,1')->name('cart.update')->block();
-    Route::get('/checkout', [\App\Http\Controllers\CheckoutController::class, 'create'])->name('checkout.create')->block();
-    Route::post('/checkout', [\App\Http\Controllers\CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store')->block();
-    Route::get('/pedido-confirmado/{number}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index')->block();
+    Route::put('/carrinho/{product}', [CartController::class, 'update'])->whereNumber('product')->middleware('throttle:60,1')->name('cart.update')->block();
+    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create')->block();
+    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:10,1')->name('checkout.store')->block();
+    Route::get('/pedido-confirmado/{number}', [CheckoutController::class, 'success'])->name('checkout.success');
 });
 Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications', 'role:admin,editor'])->prefix('area-restrita')->group(function () {
-    Route::get('/pedidos', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/pedidos/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
-    Route::patch('/pedidos/{order}/atendimento', [\App\Http\Controllers\Admin\OrderController::class, 'update'])->name('orders.update');
-    Route::patch('/pedidos/{order}/pagamento', [\App\Http\Controllers\Admin\OrderController::class, 'update'])->name('orders.payment');
+    Route::get('/pedidos', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/pedidos/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('/pedidos/{order}/atendimento', [OrderController::class, 'update'])->name('orders.update');
+    Route::patch('/pedidos/{order}/pagamento', [OrderController::class, 'update'])->name('orders.payment');
 });
