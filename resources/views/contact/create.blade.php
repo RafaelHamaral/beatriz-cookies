@@ -5,6 +5,7 @@
         <section class="auth-card">
             <p class="eyebrow">Fale com a loja</p>
             <h1>Contato</h1>
+            @include('partials.store-contact')
             <p>Envie sua dúvida ou solicitação. A equipe responderá pelo e-mail ou telefone informado.</p>
             <form method="POST" action="{{ route('contact.store') }}">
                 @csrf

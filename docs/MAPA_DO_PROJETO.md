@@ -6,6 +6,17 @@ Inventário das classes PHP próprias e seus pontos de uso. Inclui classes de te
 
 | Classe | Arquivo | O que faz | Consulte para alterar |
 | --- | --- | --- | --- |
+| `AboutSection` | `app/Models/AboutSection.php` | Guarda título, texto, galeria de imagens e visibilidade da seção Sobre; fornece conteúdo inicial. | Página inicial e configuração de Sobre. |
+| `Admin\AboutController` | `app/Http/Controllers/Admin/AboutController.php` | Edita a seção Sobre e substitui ou remove sua imagem com auditoria. | `resources/views/admin/about/edit.blade.php`; rotas `about.edit` e `about.update`. |
+| `AboutImageController` | `app/Http/Controllers/AboutImageController.php` | Entrega a imagem da seção Sobre respeitando sua visibilidade. | Rota `about.image`; armazenamento de catálogo. |
+| `UpdateAboutRequest` | `app/Http/Requests/Admin/UpdateAboutRequest.php` | Autoriza gestores e valida conteúdo e imagem da seção Sobre. | `Admin\AboutController`; regra `Rules\ProductImage`. |
+| `AboutSectionTest` | `tests/Feature/AboutSectionTest.php` | Verifica edição, permissões, escape de texto, upload, troca, remoção e visibilidade. | `php artisan test`. |
+| Classe anônima de migration (2026_11_22_000001_create_about_sections_table) | `database/migrations/2026_11_22_000001_create_about_sections_table.php` | Cria a tabela da seção Sobre. | Persistência de `AboutSection`. |
+| `StoreContact` | `app/Models/StoreContact.php` | Guarda telefone, e-mail, endereço, WhatsApp e links sociais da loja. | Configuração de contato e partial pública. |
+| `Admin\StoreContactController` | `app/Http/Controllers/Admin/StoreContactController.php` | Edita e salva os dados públicos de contato com auditoria. | `resources/views/admin/store-contact/edit.blade.php`; rotas `store-contact.edit` e `store-contact.update`. |
+| `UpdateStoreContactRequest` | `app/Http/Requests/Admin/UpdateStoreContactRequest.php` | Autoriza gestores e valida telefone, e-mail, WhatsApp e URLs HTTPS. | Formulário de contato da loja. |
+| `StoreContactTest` | `tests/Feature/StoreContactTest.php` | Verifica publicação, limpeza dos campos, permissões, validação e escape. | `php artisan test`. |
+| Classe anônima de migration (2026_11_22_000003_create_store_contacts_table) | `database/migrations/2026_11_22_000003_create_store_contacts_table.php` | Cria a configuração de contato público da loja. | Persistência de `StoreContact`. |
 | `Controller` | `app/Http/Controllers/Controller.php` | Oferece autorização aos controladores. | Base dos controladores; policies. |
 | `HomeController` | `app/Http/Controllers/HomeController.php` | Exibe produtos visíveis e avaliações aprovadas. | Página inicial; `resources/views/home.blade.php`. |
 | `CatalogController` | `app/Http/Controllers/CatalogController.php` | Lista catálogo e produtos por categoria ativa. | Catálogo; `resources/views/catalog/`. |
@@ -124,3 +135,7 @@ Inventário das classes PHP próprias e seus pontos de uso. Inclui classes de te
 Repository não foi confirmado: controladores e serviços consultam Eloquent diretamente. Não há camada própria de repositórios. Os serviços existentes não são repositórios.
 
 As transições de atendimento estão em condicionais de `app/Http/Controllers/Admin/OrderController.php`; isso não confirma o padrão State. `Queueable` em `ResetOperatorPassword` não confirma envio assíncrono: a classe não implementa `ShouldQueue`.
+
+A seção Sobre aceita até 8 imagens; a página inicial alterna somente as fotos por animação CSS, com pausa e respeito a movimento reduzido. A migration `2026_11_22_000002_add_images_to_about_sections.php` acrescenta a galeria JSON e preserva a imagem anterior.
+
+Os dados de contato são cadastrados por administradores e editores em `/area-restrita/contato-da-loja`. O partial `resources/views/partials/store-contact.blade.php`, alimentado pelo view composer em `AppServiceProvider`, exibe somente campos preenchidos no rodapé e na página de contato.

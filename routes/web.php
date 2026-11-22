@@ -21,6 +21,8 @@ use App\Http\Controllers\ProductPageController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/sobre/imagem', \App\Http\Controllers\AboutImageController::class)->name('about.image');
+
 Route::get('/', HomeController::class)->name('home');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo/{category:slug}', [CatalogController::class, 'category'])->name('catalog.category');
@@ -110,4 +112,11 @@ Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications', 
     Route::get('/pedidos/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/pedidos/{order}/atendimento', [OrderController::class, 'update'])->name('orders.update');
     Route::patch('/pedidos/{order}/pagamento', [OrderController::class, 'update'])->name('orders.payment');
+});
+
+Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications', 'role:admin,editor'])->prefix('area-restrita')->group(function () {
+    Route::get('/contato-da-loja', [\App\Http\Controllers\Admin\StoreContactController::class, 'edit'])->name('store-contact.edit');
+    Route::put('/contato-da-loja', [\App\Http\Controllers\Admin\StoreContactController::class, 'update'])->name('store-contact.update');
+    Route::get('/sobre', [\App\Http\Controllers\Admin\AboutController::class, 'edit'])->name('about.edit');
+    Route::put('/sobre', [\App\Http\Controllers\Admin\AboutController::class, 'update'])->name('about.update');
 });

@@ -4,11 +4,11 @@
     <section class="panel">
         <p class="eyebrow">Catálogo</p>
         <h1>O que está na vitrine</h1>
-        <p>Somente produtos ativos, nas categorias que a loja deixou visíveis.</p>
+        <p>Explore nossos cookies e doces e escolha os seus favoritos.</p>
     </section>
 
     @forelse ($categories as $category)
-        <section>
+        <section class="store-section">
             <h2><a href="{{ route('catalog.category', $category) }}">{{ $category->name }}</a></h2>
             @if ($category->description)
                 <p>{{ $category->description }}</p>

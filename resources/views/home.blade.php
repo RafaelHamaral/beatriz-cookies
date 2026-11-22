@@ -15,8 +15,54 @@
         </aside>
     </section>
 
-    <section>
-        <h2>Saindo do forno</h2>
+    @if ($about->is_active)
+        <section id="sobre" class="store-section about-section {{ $about->gallery() ? 'about-section--with-image' : '' }}" aria-labelledby="sobre-titulo">
+            @if ($about->gallery())
+                @php
+                    $imageCount = count($about->gallery());
+                    $imageInterval = 2; // Segundos entre as trocas de imagem.
+                    $fadeDuration = 0.8; // Duração da transição, menor que o intervalo.
+                    $carouselDuration = $imageCount * $imageInterval;
+                @endphp
+                <div class="about-media">
+                    @if ($imageCount > 1)
+                        <!--<input class="about-pause" id="about-pause" type="checkbox">
+                        <label class="about-pause-label" for="about-pause">Pausar transição</label>-->
+                        <style>
+                            @keyframes about-step {
+                                0% { opacity: 1; }
+                                {{ 100 * $imageInterval / $carouselDuration }}%, 100% { opacity: 0; }
+                            }
+                            @keyframes about-fade {
+                                0%, {{ 100 * ($imageInterval - $fadeDuration) / $carouselDuration }}% { opacity: 1; }
+                                {{ 100 * $imageInterval / $carouselDuration }}%, {{ 100 * ($carouselDuration - $fadeDuration) / $carouselDuration }}% { opacity: 0; }
+                                100% { opacity: 1; }
+                            }
+                        </style>
+                    @endif
+                    <div class="about-slides {{ $imageCount > 1 ? 'about-slides--animated' : '' }}" style="--duration: {{ $carouselDuration }}s">
+                        @foreach ($about->gallery() as $key => $image)
+                            <img class="about-image" src="{{ route('about.image', ['image' => $key]) }}" alt="{{ $about->image_alt ?: $about->title }}{{ $imageCount > 1 ? ' — imagem '.$loop->iteration.' de '.$imageCount : '' }}" width="800" height="600" style="--delay: {{ -(($imageCount - $loop->index) % $imageCount) * $imageInterval }}s">
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+            <div>
+                <p class="eyebrow">Nossa história</p>
+                <h2 id="sobre-titulo">{{ $about->title }}</h2>
+                <p class="about-text">{{ $about->body }}</p>
+            </div>
+        </section>
+    @endif
+
+    <section class="store-section">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Seleção da casa</p>
+                <h2>Saindo do forno</h2>
+            </div>
+            <a class="button button--ghost" href="{{ route('catalog.index') }}">Ver todo o catálogo</a>
+        </div>
         @if ($products->isEmpty())
             <p>A vitrine ainda não tem produtos ativos.</p>
         @else

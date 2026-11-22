@@ -14,6 +14,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \Illuminate\Support\Facades\View::composer('partials.store-contact', function ($view) {
+            $view->with('storeContact', \App\Models\StoreContact::current());
+        });
+
         Password::defaults(fn () => Password::min(8)->max(255));
 
         if ($this->app->environment('production')) {

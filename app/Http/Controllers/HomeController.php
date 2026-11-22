@@ -13,6 +13,7 @@ class HomeController extends Controller
     public function __invoke(): View
     {
         return view('home', [
+            'about' => \App\Models\AboutSection::current(),
             'products' => Product::query()
                 ->visibleOnStore()
                 ->with(['coverImage', 'category'])

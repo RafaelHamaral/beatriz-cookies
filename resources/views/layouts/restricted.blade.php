@@ -17,6 +17,8 @@
             @if (auth()->user()?->managesCatalog() && (! auth()->user()->isAdmin() || auth()->user()->hasConfirmedTwoFactor()))
                 <a href="{{ route('categories.index') }}">Categorias</a>
                 <a href="{{ route('products.index') }}">Produtos</a>
+                <a href="{{ route('about.edit') }}">Sobre</a>
+                <a href="{{ route('store-contact.edit') }}">Contato da loja</a>
                 <a class="nav-link-with-badge" href="{{ route('orders.index') }}">
                     Pedidos
                     @if ($pendingOrdersCount > 0)
