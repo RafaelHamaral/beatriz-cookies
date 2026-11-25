@@ -59,3 +59,11 @@ Pedidos preservam nome e preço unitário dos itens. O checkout recalcula tudo n
 - `/avaliar` recebe notas de 1 a 5. Avaliações começam pendentes e só aparecem na página inicial depois da aprovação em `/area-restrita/avaliacoes`.
 - Badges na navegação informam pedidos aguardando confirmação, mensagens não lidas e avaliações pendentes.
 - Viewer consulta somente o dashboard. Admin e editor operam mensagens e avaliações.
+
+## Aviso de cookies
+
+Auditoria do código: o Laravel utiliza o cookie de sessão (nome configurado em `config/session.php`) para login, autenticação em dois fatores, carrinho e checkout; `XSRF-TOKEN` protege requisições contra CSRF. Não há scripts de terceiros carregados, uso de localStorage/sessionStorage ou cookies opcionais. Os links para redes sociais e WhatsApp são links externos, sem embeds. Não existe uma rota de Política de Privacidade.
+
+O aviso informativo aparece no layout público até a confirmação em “Entendi”. O cookie `beatriz_cookie_notice` guarda somente a versão confirmada (`v1`) por 180 dias, com HttpOnly e SameSite=Lax, e Secure em HTTPS. “Preferências de cookies” no rodapé reabre o aviso. Não há categorias opcionais para aceitar, recusar ou revogar. Cookies de sessão e login não são removidos. A implementação usa formulário POST com CSRF e mantém a política `script-src 'none'`.
+
+`php artisan test --filter=CookieNoticeTest` verifica primeira visita, confirmação, validade da persistência, navegação com confirmação salva, reabertura pelo rodapé e preservação de autenticação/carrinho. Para a revisão visual, conferir 320px/390px e desktop, zoom, Tab/Shift+Tab e Enter no link do rodapé e no botão; o banner tem rolagem própria em telas baixas e espaço reservado ao fim da página.

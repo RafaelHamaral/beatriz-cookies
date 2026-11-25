@@ -45,6 +45,7 @@
                     <li><a href="{{ route('catalog.index') }}">Catálogo</a></li>
                     <li><a href="{{ route('cart.index') }}">Carrinho</a></li>
                     <li><a href="{{ route('reviews.create') }}">Deixe sua avaliação</a></li>
+                    <li><a href="{{ request()->fullUrlWithQuery(['cookies' => '1']) }}#aviso-cookies">Preferências de cookies</a></li>
                 </ul>
             </nav>
             <div>
@@ -60,5 +61,6 @@
             <a href="{{ route('dashboard') }}">Área da loja</a>
         </div>
     </footer>
+    @include('partials.cookie-notice')
 </body>
 </html>

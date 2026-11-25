@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sobre/imagem', \App\Http\Controllers\AboutImageController::class)->name('about.image');
 
 Route::get('/', HomeController::class)->name('home');
+Route::post('/cookies/entendi', \App\Http\Controllers\CookieNoticeController::class)
+    ->middleware('no.store')->name('cookies.acknowledge');
 Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
 Route::get('/catalogo/{category:slug}', [CatalogController::class, 'category'])->name('catalog.category');
 Route::get('/produtos/{product:slug}', ProductPageController::class)->name('products.show');
