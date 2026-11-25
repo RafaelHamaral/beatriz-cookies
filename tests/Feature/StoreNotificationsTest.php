@@ -30,7 +30,7 @@ class StoreNotificationsTest extends TestCase
         parent::setUp();
         config([
             'store_notifications.mailer' => 'smtp',
-            'store_notifications.recipient' => 'rafael_hasoftware@outlook.com.br',
+            'store_notifications.recipient' => 'contato@example.com',
             'mail.from.address' => 'loja@example.com',
             'mail.from.name' => 'Site Beatriz',
             'mail.mailers.smtp.username' => 'smtp-test-user',
@@ -76,7 +76,7 @@ class StoreNotificationsTest extends TestCase
             $this->assertStringContainsString('Mensagem de teste', $html);
             $this->assertStringContainsString('&lt;script&gt;', $html);
             $this->assertStringNotContainsString('<script>', $html);
-            return $mail->hasTo('rafael_hasoftware@outlook.com.br');
+            return $mail->hasTo('contato@example.com');
         });
         Mail::assertSentCount(1);
         $this->assertNotNull($delivery->fresh()->sent_at);
@@ -105,7 +105,7 @@ class StoreNotificationsTest extends TestCase
             foreach (['Cookie de teste', 'R$ 12,50', 'R$ 25,00', 'Sem açúcar', '(11) 99999-9999'] as $text) {
                 $this->assertStringContainsString($text, $html);
             }
-            return $mail->hasTo('rafael_hasoftware@outlook.com.br');
+            return $mail->hasTo('contato@example.com');
         });
         Mail::assertSentCount(1);
     }

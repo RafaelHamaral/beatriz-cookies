@@ -21,6 +21,8 @@ Como exemplo, a vitrine fica em `https://loja.example.com` e o catálogo em `htt
 
 O seeder só roda com `APP_ENV=local`, não faz parte do `DatabaseSeeder` e não troca a senha nem o perfil se a conta já existir. A senha é gravada com `Hash::make()`.
 
+As migrations criam ou alteram somente a estrutura das tabelas: não importam, exportam nem incluem dados do banco existente. O `DatabaseSeeder` não cadastra usuários, contatos ou SMTP. Apenas a execução explícita do `AdminUserSeeder` cria o administrador informado nas variáveis locais, sem credenciais fixas no código. Remetente, destinatário, endereço e demais contatos devem ser cadastrados no painel; em uma instalação nova, esses dados ficam vazios. Arquivos `.env` e suas variantes são ignorados pelo Git, com exceção do `.env.example`, que contém apenas campos vazios ou exemplos fictícios. Alterar esses padrões do código não modifica os dados já salvos no banco.
+
 No ambiente local o e-mail de redefinição de senha vai para `storage/logs/laravel.log`.
 
 ## Notificações de pedidos e mensagens por e-mail

@@ -11,9 +11,9 @@ class OutlookMailSetting extends Model
     protected $hidden = ['client_secret', 'access_token', 'refresh_token'];
 
     protected $attributes = [
-        'from_address' => 'rafael_hasoftware@outlook.com.br',
+        'from_address' => '',
         'from_name' => 'Site Beatriz',
-        'recipient' => 'rafael_hasoftware@outlook.com.br',
+        'recipient' => '',
     ];
 
     protected function casts(): array

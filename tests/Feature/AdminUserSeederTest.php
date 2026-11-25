@@ -15,6 +15,15 @@ class AdminUserSeederTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_migrations_and_default_seeder_leave_personal_data_tables_empty(): void
+    {
+        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+
+        foreach (['users', 'store_contacts', 'outlook_mail_settings', 'orders', 'contact_messages'] as $table) {
+            $this->assertDatabaseCount($table, 0);
+        }
+    }
+
     public function test_database_seeder_does_not_create_the_admin(): void
     {
         $this->seed(DatabaseSeeder::class);

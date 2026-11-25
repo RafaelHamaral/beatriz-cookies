@@ -28,8 +28,8 @@ class OutlookMailSettingsTest extends TestCase
 
     private function data(): array
     {
-        return ['from_address' => 'rafael_hasoftware@outlook.com.br', 'from_name' => 'Site Beatriz',
-            'recipient' => 'rafael_hasoftware@outlook.com.br',
+        return ['from_address' => 'contato@example.com', 'from_name' => 'Site Beatriz',
+            'recipient' => 'contato@example.com',
             'client_id' => '12345678-1234-4321-8123-123456789012', 'client_secret' => 'fictional-client-secret'];
     }
 
@@ -55,7 +55,9 @@ class OutlookMailSettingsTest extends TestCase
         $this->get(route('mail-settings.edit'))->assertRedirect(route('two-factor.setup'));
         $this->actingAs($this->admin());
         $this->get(route('mail-settings.edit'))->assertOk()->assertSee('smtp-mail.outlook.com')
-            ->assertSee('rafael_hasoftware@outlook.com.br')->assertSee('OAuth2');
+            ->assertSee('OAuth2');
+        $this->assertSame('', OutlookMailSetting::current()->from_address);
+        $this->assertSame('', OutlookMailSetting::current()->recipient);
     }
 
     public function test_settings_are_saved_with_encrypted_hidden_secrets_and_blank_secret_is_preserved(): void
@@ -95,7 +97,7 @@ class OutlookMailSettingsTest extends TestCase
         $this->assertStringStartsWith(OutlookOAuth::BASE.'/authorize?', $response->headers->get('Location'));
         $this->assertSame('S256', $query['code_challenge_method']);
         $this->assertSame(OutlookOAuth::SCOPE, $query['scope']);
-        $this->assertSame('rafael_hasoftware@outlook.com.br', $query['login_hint']);
+        $this->assertSame('contato@example.com', $query['login_hint']);
         $this->get(route('mail-settings.callback', ['state' => $query['state'], 'code' => 'fictional-code']))
             ->assertRedirect(route('mail-settings.edit'))->assertSessionHas('success');
         Http::assertSent(fn ($request) => $request['grant_type'] === 'authorization_code'
@@ -182,7 +184,7 @@ class OutlookMailSettingsTest extends TestCase
             $this->assertSame(587, $config['port']);
             $this->assertTrue($config['require_tls']);
             $this->assertSame('fresh-access', $config['password']);
-            $this->assertSame('rafael_hasoftware@outlook.com.br', $config['username']);
+            $this->assertSame('contato@example.com', $config['username']);
             $mailer = $manager->build($config);
             $mailer->setSymfonyTransport($transport);
             return $mailer;
@@ -192,8 +194,8 @@ class OutlookMailSettingsTest extends TestCase
             'name' => 'Visitante', 'email' => 'visitor@example.com', 'subject' => 'Teste', 'message' => 'Teste fictício',
         ]));
         $email = $transport->messages[0]->getOriginalMessage();
-        $this->assertSame('rafael_hasoftware@outlook.com.br', $email->getFrom()[0]->getAddress());
-        $this->assertSame('rafael_hasoftware@outlook.com.br', $email->getTo()[0]->getAddress());
+        $this->assertSame('contato@example.com', $email->getFrom()[0]->getAddress());
+        $this->assertSame('contato@example.com', $email->getTo()[0]->getAddress());
         $this->assertSame('visitor@example.com', $email->getReplyTo()[0]->getAddress());
         $this->assertSame('XOAUTH2', $transport->authenticationMethods[0]->getAuthKeyword());
         $this->assertCount(1, $transport->authenticationMethods);
