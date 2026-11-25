@@ -19,6 +19,7 @@
                 <a href="{{ route('products.index') }}">Produtos</a>
                 <a href="{{ route('about.edit') }}">Sobre</a>
                 <a href="{{ route('store-contact.edit') }}">Contato da loja</a>
+                <a href="{{ route('opening-hours.edit') }}">Horário de funcionamento</a>
                 <a class="nav-link-with-badge" href="{{ route('orders.index') }}">
                     Pedidos
                     @if ($pendingOrdersCount > 0)
