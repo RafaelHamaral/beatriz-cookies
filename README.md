@@ -60,12 +60,6 @@ Pedidos preservam nome e preço unitário dos itens. O checkout recalcula tudo n
 - Badges na navegação informam pedidos aguardando confirmação, mensagens não lidas e avaliações pendentes.
 - Viewer consulta somente o dashboard. Admin e editor operam mensagens e avaliações.
 
-## Horário de funcionamento
-
-Execute `php artisan migrate` para adicionar a coluna JSON `opening_hours` às configurações de contato. Administradores com dois fatores configurados e editores acessam **Horário de funcionamento** no menu do painel, também disponível em **Contato da loja**. Para cada um dos sete dias, escolha **Fechado** ou **Aberto nos intervalos abaixo** e informe um intervalo por linha, como `08:00–12:00` e `13:00–18:00`. Os horários usam formato de 24 horas e devem começar e terminar no mesmo dia; intervalos sobrepostos são rejeitados. Intervalos consecutivos são permitidos.
-
-Os horários ficam ocultos até o primeiro salvamento. Depois, aparecem na página de contato e no rodapé, com todos os dias e a indicação **Fechado** quando aplicável. As alterações são registradas na auditoria e não modificam os demais dados de contato. `php artisan test --filter=OpeningHoursTest` verifica cadastro, edição, pausas, dias fechados, formatos inválidos, sobreposições, persistência, exibição pública e permissões do painel.
-
 ## Aviso de cookies
 
 Auditoria do código: o Laravel utiliza o cookie de sessão (nome configurado em `config/session.php`) para login, autenticação em dois fatores, carrinho e checkout; `XSRF-TOKEN` protege requisições contra CSRF. Não há scripts de terceiros carregados, uso de localStorage/sessionStorage ou cookies opcionais. Os links para redes sociais e WhatsApp são links externos, sem embeds. Não existe uma rota de Política de Privacidade.

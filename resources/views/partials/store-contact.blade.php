@@ -18,23 +18,4 @@
             @endforeach
         </nav>
     @endif
-    @if ($storeContact->opening_hours)
-        <section class="opening-hours" aria-label="Horário de funcionamento">
-            <h2>Horário de funcionamento</h2>
-            <dl>
-                @foreach (\App\Models\StoreContact::WEEKDAYS as $day => $label)
-                    <div>
-                        <dt>{{ $label }}</dt>
-                        <dd>
-                            @if ($storeContact->opening_hours[$day]['closed'])
-                                Fechado
-                            @else
-                                {{ implode(' e ', array_map(fn ($interval) => $interval['start'].'–'.$interval['end'], $storeContact->opening_hours[$day]['intervals'])) }}
-                            @endif
-                        </dd>
-                    </div>
-                @endforeach
-            </dl>
-        </section>
-    @endif
 </div>

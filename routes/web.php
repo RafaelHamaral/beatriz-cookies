@@ -119,8 +119,6 @@ Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications', 
 Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications', 'role:admin,editor'])->prefix('area-restrita')->group(function () {
     Route::get('/contato-da-loja', [\App\Http\Controllers\Admin\StoreContactController::class, 'edit'])->name('store-contact.edit');
     Route::put('/contato-da-loja', [\App\Http\Controllers\Admin\StoreContactController::class, 'update'])->name('store-contact.update');
-    Route::get('/horario-de-funcionamento', [\App\Http\Controllers\Admin\OpeningHoursController::class, 'edit'])->name('opening-hours.edit');
-    Route::put('/horario-de-funcionamento', [\App\Http\Controllers\Admin\OpeningHoursController::class, 'update'])->name('opening-hours.update');
     Route::get('/sobre', [\App\Http\Controllers\Admin\AboutController::class, 'edit'])->name('about.edit');
     Route::put('/sobre', [\App\Http\Controllers\Admin\AboutController::class, 'update'])->name('about.update');
 });
