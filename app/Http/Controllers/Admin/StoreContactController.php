@@ -21,7 +21,7 @@ class StoreContactController extends Controller
     {
         DB::transaction(function () use ($request) {
             $contact = StoreContact::query()->updateOrCreate(['id' => 1], array_replace(
-                array_fill_keys((new StoreContact)->getFillable(), null),
+                array_fill_keys(array_diff((new StoreContact)->getFillable(), ['opening_hours']), null),
                 $request->validated(),
             ));
             AuditLogger::record('store_contact.updated', $contact);

@@ -13,6 +13,17 @@
 
 * { box-sizing: border-box; }
 
+.opening-hours-day { min-width: 0; margin: 1.25rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 16px; }
+.opening-hours-day legend { padding: 0 0.4rem; font-weight: 700; }
+.opening-hours-day textarea { resize: vertical; }
+.opening-hours-error { color: var(--danger); }
+.opening-hours { margin-top: 1.5rem; }
+.opening-hours h2 { font-size: 1.15rem; }
+.opening-hours dl { margin: 0; }
+.opening-hours dl > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; padding: 0.5rem 0; border-bottom: 1px solid var(--line); }
+.opening-hours dt { font-weight: 700; }
+.opening-hours dd { margin: 0; }
+
 .cookie-notice {
     position: fixed;
     bottom: 0;

@@ -4,6 +4,7 @@
     <section class="panel">
         <p class="eyebrow">Configurações do site</p>
         <h1>Contato e redes sociais</h1>
+        <p><a href="{{ route('opening-hours.edit') }}">Horário de funcionamento</a></p>
         <p>Essas informações aparecem no rodapé e na página de contato. Deixe em branco os campos que não deseja exibir.</p>
         <form method="POST" action="{{ route('store-contact.update') }}">
             @csrf
