@@ -24,6 +24,9 @@ class AuditLogger
         'recovery_codes',
         'code',
         'remember_token',
+        'client_secret',
+        'access_token',
+        'refresh_token',
     ];
 
     /**

@@ -72,6 +72,12 @@ Route::middleware(['auth', 'admin.2fa', 'no.store', 'restricted.notifications'])
         ->name('two-factor.recovery');
 
     Route::middleware('role:admin')->group(function () {
+        Route::get('/configuracoes/email', [\App\Http\Controllers\Admin\OutlookMailController::class, 'edit'])->name('mail-settings.edit');
+        Route::put('/configuracoes/email', [\App\Http\Controllers\Admin\OutlookMailController::class, 'update'])->name('mail-settings.update');
+        Route::post('/configuracoes/email/conectar', [\App\Http\Controllers\Admin\OutlookMailController::class, 'connect'])->middleware('throttle:5,1')->name('mail-settings.connect');
+        Route::get('/configuracoes/email/retorno', [\App\Http\Controllers\Admin\OutlookMailController::class, 'callback'])->name('mail-settings.callback');
+        Route::post('/configuracoes/email/desconectar', [\App\Http\Controllers\Admin\OutlookMailController::class, 'disconnect'])->name('mail-settings.disconnect');
+        Route::post('/configuracoes/email/testar', [\App\Http\Controllers\Admin\OutlookMailController::class, 'test'])->middleware('throttle:2,1')->name('mail-settings.test');
         Route::get('/usuarios', [UserController::class, 'index'])->name('users.index');
         Route::post('/usuarios', [UserController::class, 'store'])->name('users.store');
         Route::patch('/usuarios/{user}', [UserController::class, 'update'])->name('users.update');

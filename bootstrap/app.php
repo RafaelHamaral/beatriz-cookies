@@ -35,5 +35,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'recovery_code',
             'two_factor_secret',
             'token',
+            'client_secret',
+            'access_token',
+            'refresh_token',
         ]);
     })->create();

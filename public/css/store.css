@@ -13,6 +13,10 @@
 
 * { box-sizing: border-box; }
 
+.mail-settings-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.mail-settings-actions form { margin: 0; }
+.panel code { overflow-wrap: anywhere; }
+
 .opening-hours-day { min-width: 0; margin: 1.25rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 16px; }
 .opening-hours-day legend { padding: 0 0.4rem; font-weight: 700; }
 .opening-hours-day textarea { resize: vertical; }

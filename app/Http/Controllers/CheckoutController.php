@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Orders\CheckoutRequest;
 use App\Models\Order;
 use App\Services\Cart;
+use App\Services\StoreNotifications;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -54,6 +55,7 @@ class CheckoutController extends Controller
                     'unit_price_cents' => $line['product']->price_cents, 'quantity' => $line['quantity'], 'total_cents' => $line['total_cents'],
                 ]);
             }
+            StoreNotifications::record($order);
             return $order;
         }, 3);
         $receipts[$key] = $order->number;

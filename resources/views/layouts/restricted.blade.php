@@ -47,6 +47,7 @@
             @endif
             @if (auth()->user()?->isAdmin() && auth()->user()?->hasConfirmedTwoFactor())
                 <a href="{{ route('users.index') }}">Usuários</a>
+                <a href="{{ route('mail-settings.edit') }}">Configurações de e-mail</a>
             @endif
             <form class="inline-form" method="POST" action="{{ route('logout') }}">
                 @csrf

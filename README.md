@@ -17,11 +17,44 @@ php artisan db:seed --class=AdminUserSeeder
 php artisan serve
 ```
 
-A vitrine fica em `http://127.0.0.1:8000` e o catálogo em `http://127.0.0.1:8000/catalogo`. O login fica em `http://127.0.0.1:8000/login`.
+Como exemplo, a vitrine fica em `https://loja.example.com` e o catálogo em `https://loja.example.com/catalogo`. O login fica em `https://loja.example.com/login`.
 
 O seeder só roda com `APP_ENV=local`, não faz parte do `DatabaseSeeder` e não troca a senha nem o perfil se a conta já existir. A senha é gravada com `Hash::make()`.
 
 No ambiente local o e-mail de redefinição de senha vai para `storage/logs/laravel.log`.
+
+## Notificações de pedidos e mensagens por e-mail
+
+### Configuração do Outlook pela área restrita
+
+Em **Área restrita → Configurações de e-mail** (`/area-restrita/configuracoes/email`), administradores com dois fatores configuram o remetente, o nome e o destinatário. Como exemplo fictício, use `contato@example.com` para remetente e destinatário e servidor `smtp.example.com`, porta 587 e STARTTLS obrigatório. Esta configuração se aplica às notificações de pedidos e mensagens; a redefinição de senha dos operadores continua usando o mailer do ambiente.
+
+O Outlook.com pessoal exige [OAuth2](https://support.microsoft.com/pt-br/outlook/pop-imap-and-smtp-settings-for-outlook-com). Registre no Microsoft Entra um aplicativo que aceite contas Microsoft pessoais, configure a plataforma **Web**, cadastre exatamente a URL de retorno exibida no painel, habilite a permissão delegada `https://outlook.office.com/SMTP.Send` e crie um segredo de cliente. Configure `APP_URL` com a URL pública HTTPS do site em produção. Salve no painel o ID do aplicativo e o valor do segredo; clique em **Conectar Outlook** e entre com a mesma conta informada como remetente. Não use a senha da caixa de e-mail neste formulário.
+
+A implementação usa o [fluxo de código de autorização da Microsoft](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow) com state de uso único, validade de dez minutos, PKCE S256 e escopo `offline_access` para renovar o acesso automaticamente. SMTP autentica exclusivamente por XOAUTH2. Segredo, access token e refresh token são criptografados com `APP_KEY`, ocultos na serialização e não retornam ao formulário nem à sessão de validação. Guarde a chave da aplicação em segurança: ela é necessária para descriptografar essas credenciais. O botão **Enviar dois e-mails de teste** reutiliza o comando abaixo, com dados fictícios e assuntos `[TESTE]`. O aceite SMTP não confirma a entrega na caixa de entrada.
+
+Deixar o segredo em branco mantém o valor salvo. Alterar aplicativo, segredo ou remetente invalida os tokens e exige reconectar; mudar apenas nome ou destinatário preserva a autorização. **Desconectar Outlook** remove os tokens locais e interrompe novos envios, sem apagar pedidos ou mensagens. Para revogação na Microsoft, remova também a permissão do aplicativo na conta Microsoft. Quando o segredo do aplicativo expirar, substitua-o no painel e reconecte. As configurações do painel têm precedência sobre as variáveis SMTP de ambiente depois de salvas e são consultadas a cada envio, inclusive por workers já em execução.
+
+`php artisan test --filter=OutlookMailSettingsTest` cobre permissões, criptografia, ausência de segredos no HTML/old input, callback OAuth, PKCE/state, renovação, desconexão e uso do remetente/destinatário salvos. Os testes não contatam a Microsoft.
+
+### Configuração alternativa por ambiente e operação da fila
+
+Enquanto nenhuma configuração tiver sido salva no painel, o mecanismo anterior por ambiente continua disponível para outros provedores SMTP:
+
+Novos pedidos e mensagens criam, na mesma transação, um registro em `store_notification_deliveries`. Após o commit, o Laravel enfileira um job contendo apenas o ID desse registro. Os e-mails usam o SMTP já disponível no Laravel/Symfony, com assuntos `Novo pedido #ID — Site Beatriz` e `Nova mensagem — Site Beatriz`, dados de contato, itens/preços do pedido ou conteúdo da mensagem. O remetente vem de `MAIL_FROM_ADDRESS` e deve ser autorizado pelo provedor; o e-mail válido do visitante fica somente no Reply-To.
+
+Configure no `.env`, sem versionar segredos:
+
+- `STORE_NOTIFICATIONS_TO=contato@example.com` e `STORE_NOTIFICATIONS_MAILER=smtp`.
+- `MAIL_HOST=smtp.example.com`, `MAIL_PORT`, `MAIL_USERNAME=usuario@example.com`, `MAIL_PASSWORD=****`: exemplos fictícios das credenciais do provedor de envio, que não precisa ser Outlook. Use `MAIL_SCHEME=smtp` e porta 587 para STARTTLS, ou `MAIL_SCHEME=smtps` e porta 465 para TLS implícito, conforme o provedor. TLS e validação do certificado são obrigatórios; não desabilite `require_tls`/`verify_peer` via `MAIL_URL`.
+- `MAIL_FROM_ADDRESS`: caixa/domínio autorizado pelo provedor; `MAIL_FROM_NAME`: nome da loja. Configure a autenticação de domínio exigida pelo provedor (SPF/DKIM). O endereço do visitante nunca substitui o remetente.
+- `MAIL_TIMEOUT=20`, `QUEUE_CONNECTION=database`, `DB_QUEUE_RETRY_AFTER=90` (sempre maior que o timeout de 45 segundos do job). As notificações usam explicitamente SMTP, mesmo se `MAIL_MAILER=log` estiver configurado para outros e-mails; transportes `log`, `array` e `failover` são recusados para impedir gravação de dados dos visitantes nos logs.
+
+Após configurar, execute `php artisan migrate` e `php artisan config:cache`. Mantenha `php artisan queue:work --sleep=3 --timeout=45` em execução por Supervisor ou serviço equivalente e reinicie os workers com `php artisan queue:restart` após alterações. Em hospedagem compartilhada sem processo persistente, agende `php artisan queue:work --stop-when-empty --timeout=45 --max-time=50` a cada minuto, sem execuções concorrentes. Ative também o cron do Laravel (`php artisan schedule:run` a cada minuto); ele recupera registros que não chegaram à fila. A recuperação também pode ser acionada com `php artisan notifications:dispatch-pending`.
+
+Falhas de SMTP preservam pedido/mensagem, não marcam o envio como concluído e geram log apenas com o ID interno da notificação. São feitas até três tentativas, com intervalos de 60 e 300 segundos; após esgotar, use `php artisan queue:failed` e `php artisan queue:retry UUID` após corrigir a configuração. A exceção salva em `failed_jobs` é sanitizada, sem resposta SMTP, credenciais ou dados pessoais. Há um registro único por origem, bloqueio no banco durante o envio e verificação de `sent_at` para evitar duplicações por repetição do checkout ou reprocessamento. Como em qualquer envio SMTP, uma queda após o provedor aceitar o e-mail e antes de salvar `sent_at` pode deixar o resultado incerto; confirme com o provedor antes de reenviar esse caso.
+
+Para testar o provedor após configurar as credenciais, execute `php artisan notifications:test-smtp`: ele envia exatamente um e-mail por fluxo, com `[TESTE]` no assunto e dados fictícios, sem criar pedidos ou mensagens. Sucesso significa que o provedor aceitou o envio, não que o Outlook entregou na caixa de entrada; confirme o recebimento (incluindo lixo eletrônico) no Outlook. `php artisan test --filter=StoreNotificationsTest` cobre os dois fluxos, conteúdo/Reply-To, commit/rollback, reenvio sem duplicação, recuperação da fila, falha SMTP simulada e proteção dos logs.
 
 ## Testes
 
