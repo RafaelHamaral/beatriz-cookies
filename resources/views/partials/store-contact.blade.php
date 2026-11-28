@@ -8,8 +8,8 @@
     @if ($storeContact->address)
         <address>{{ $storeContact->address }}</address>
     @endif
-    @if ($storeContact->whatsapp)
-        <p><a href="https://wa.me/{{ $storeContact->whatsapp }}" target="_blank" rel="noopener noreferrer">Fale pelo WhatsApp</a></p>
+    @if ($storeContact->whatsappNumber())
+        <p><a href="https://wa.me/{{ $storeContact->whatsappNumber() }}" target="_blank" rel="noopener noreferrer">Fale pelo WhatsApp</a></p>
     @endif
     @if ($storeContact->socialLinks())
         <nav class="store-social-links" aria-label="Redes sociais da loja">

@@ -20,11 +20,11 @@
                 <tbody>
                     @forelse ($messages as $message)
                         <tr class="{{ $message->read_at ? '' : 'table-row--unread' }}">
-                            <td>{{ $message->created_at->format('d/m/Y H:i') }}</td>
-                            <td>{{ $message->name }}<br>{{ $message->email }}</td>
-                            <td><a href="{{ route('messages.show', $message) }}">{{ $message->subject }}</a></td>
-                            <td>{{ $message->read_at ? 'Lida' : 'Nova' }}</td>
-                            <td>{{ $message->handled_at ? 'Atendida' : 'Pendente' }}</td>
+                            <td data-label="Recebida">{{ $message->created_at->format('d/m/Y H:i') }}</td>
+                            <td data-label="Contato">{{ $message->name }}<br>{{ $message->email }}</td>
+                            <td data-label="Assunto"><a href="{{ route('messages.show', $message) }}">{{ $message->subject }}</a></td>
+                            <td data-label="Leitura">{{ $message->read_at ? 'Lida' : 'Nova' }}</td>
+                            <td data-label="Atendimento">{{ $message->handled_at ? 'Atendida' : 'Pendente' }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="5">Nenhuma mensagem encontrada.</td></tr>

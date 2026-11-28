@@ -12,6 +12,29 @@
 <input id="name" name="name" value="{{ old('name', $product->name ?? '') }}" required>
 <label for="price">Preço</label>
 <input id="price" name="price" inputmode="decimal" value="{{ old('price', isset($product) ? intdiv($product->price_cents, 100).','.str_pad((string) ($product->price_cents % 100), 2, '0', STR_PAD_LEFT) : '') }}" placeholder="18,50" required>
+<label for="stock_units">Estoque em unidades</label>
+<input id="stock_units" name="stock_units" type="number" min="0" max="100000" step="1" value="{{ old('stock_units', isset($product) ? $product->stock_units : 0) }}" required>
+<p class="hint">Saldo físico deste produto. Venda avulsa desconta daqui. Se o produto for um combo, a venda desconta os itens da composição abaixo, e não este número.</p>
+@php
+    $savedComponents = isset($product) ? $product->components->values() : collect();
+@endphp
+<h2>Composição do combo</h2>
+<p class="hint">Deixe as linhas em branco para um produto avulso. Para um combo, escolha cada produto e quantas unidades entram em uma unidade do combo.</p>
+@for ($i = 0; $i < 6; $i++)
+    @php
+        $selected = old('components.'.$i.'.product_id', $savedComponents[$i]->product_id ?? '');
+        $units = old('components.'.$i.'.units', $savedComponents[$i]->units ?? '');
+    @endphp
+    <label for="component-product-{{ $i }}">Produto {{ $i + 1 }} do combo</label>
+    <select id="component-product-{{ $i }}" name="components[{{ $i }}][product_id]">
+        <option value="">Nenhum</option>
+        @foreach (($componentChoices ?? collect()) as $choice)
+            <option value="{{ $choice->id }}" @selected((string) $selected === (string) $choice->id)>{{ $choice->name }}</option>
+        @endforeach
+    </select>
+    <label for="component-units-{{ $i }}">Unidades deste produto no combo</label>
+    <input id="component-units-{{ $i }}" name="components[{{ $i }}][units]" type="number" min="1" max="99" step="1" value="{{ $units }}">
+@endfor
 <label for="description">Descrição</label>
 <textarea id="description" name="description" rows="4" required>{{ old('description', $product->description ?? '') }}</textarea>
 <label for="ingredients">Ingredientes</label>

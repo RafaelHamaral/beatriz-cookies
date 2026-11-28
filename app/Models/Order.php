@@ -15,7 +15,7 @@ class Order extends Model
 
     protected function casts(): array
     {
-        return ['paid_at' => 'datetime', 'total_cents' => 'integer', 'version' => 'integer'];
+        return ['paid_at' => 'datetime', 'total_cents' => 'integer', 'version' => 'integer', 'stock_restored_at' => 'datetime'];
     }
 
     public function items(): HasMany
@@ -26,5 +26,10 @@ class Order extends Model
     public function paidBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'paid_by');
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(OrderStockMovement::class);
     }
 }

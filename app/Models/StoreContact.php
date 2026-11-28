@@ -38,4 +38,10 @@ class StoreContact extends Model
             'TikTok' => $this->tiktok,
         ]);
     }
+
+    public function whatsappNumber(): ?string
+    {
+        return is_string($this->whatsapp) && preg_match('/^[1-9][0-9]{9,14}$/D', $this->whatsapp)
+            ? $this->whatsapp : null;
+    }
 }

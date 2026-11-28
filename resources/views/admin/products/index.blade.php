@@ -12,6 +12,7 @@
                         <th>Nome</th>
                         <th>Categoria</th>
                         <th>Preço</th>
+                        <th>Estoque</th>
                         <th>Vitrine</th>
                         <th>Encomenda</th>
                         <th></th>
@@ -20,12 +21,13 @@
                 <tbody>
                     @foreach ($products as $product)
                         <tr>
-                            <td>{{ $product->name }}</td>
-                            <td>{{ $product->category->name }}</td>
-                            <td>{{ $product->formattedPrice() }}</td>
-                            <td>{{ $product->is_active ? 'Ativo' : 'Inativo' }}</td>
-                            <td>{{ $product->is_available ? 'Disponível' : 'Indisponível' }}</td>
-                            <td>
+                            <td data-label="Nome">{{ $product->name }}</td>
+                            <td data-label="Categoria">{{ $product->category->name }}</td>
+                            <td data-label="Preço">{{ $product->formattedPrice() }}</td>
+                            <td data-label="Estoque">{{ $product->components_count > 0 ? 'Combo' : $product->stock_units.' un.' }}</td>
+                            <td data-label="Vitrine">{{ $product->is_active ? 'Ativo' : 'Inativo' }}</td>
+                            <td data-label="Encomenda">{{ $product->is_available ? 'Disponível' : 'Indisponível' }}</td>
+                            <td class="row-actions" data-label="Ações">
                                 <a href="{{ route('products.edit', $product) }}">Editar</a>
                                 <form class="inline-form" method="POST" action="{{ route('products.activation', $product) }}">
                                     @csrf

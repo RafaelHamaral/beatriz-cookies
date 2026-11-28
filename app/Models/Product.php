@@ -30,6 +30,7 @@ class Product extends Model
         'ingredients',
         'allergens',
         'price_cents',
+        'stock_units',
         'is_available',
         'is_active',
     ];
@@ -41,6 +42,7 @@ class Product extends Model
     {
         return [
             'price_cents' => 'integer',
+            'stock_units' => 'integer',
             'is_available' => 'boolean',
             'is_active' => 'boolean',
         ];
@@ -59,6 +61,11 @@ class Product extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function components(): HasMany
+    {
+        return $this->hasMany(ProductComponent::class, 'combo_id');
     }
 
     public function coverImage(): HasOne

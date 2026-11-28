@@ -32,10 +32,10 @@
                 <tbody>
                     @foreach ($categories as $category)
                         <tr>
-                            <td>{{ $category->name }}</td>
-                            <td>{{ $category->products_count }}</td>
-                            <td>{{ $category->is_active ? 'Ativa' : 'Inativa' }}</td>
-                            <td>
+                            <td data-label="Nome">{{ $category->name }}</td>
+                            <td data-label="Produtos">{{ $category->products_count }}</td>
+                            <td data-label="Vitrine">{{ $category->is_active ? 'Ativa' : 'Inativa' }}</td>
+                            <td class="row-actions" data-label="Ações">
                                 <a href="{{ route('categories.edit', $category) }}">Editar</a>
                                 <form class="inline-form" method="POST" action="{{ route('categories.activation', $category) }}">
                                     @csrf

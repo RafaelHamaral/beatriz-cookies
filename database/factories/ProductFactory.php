@@ -26,6 +26,7 @@ class ProductFactory extends Factory
             'ingredients' => 'Manteiga, açúcar, farinha e chocolate.',
             'allergens' => 'Contém glúten, leite e ovos.',
             'price_cents' => 1850,
+            'stock_units' => 100,
             'is_available' => true,
             'is_active' => true,
         ];

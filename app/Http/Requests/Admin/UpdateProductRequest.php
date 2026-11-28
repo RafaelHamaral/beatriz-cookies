@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin;
 
+use App\Http\Requests\Admin\Concerns\ValidatesStock;
 use App\Models\Product;
 use App\Rules\ProductImage as ProductImageRule;
 use App\Support\Money;
@@ -12,6 +13,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductRequest extends FormRequest
 {
+    use ValidatesStock;
+
     public function authorize(): bool
     {
         $product = $this->route('product');
@@ -38,6 +41,7 @@ class UpdateProductRequest extends FormRequest
             'remove.*' => ['integer'],
             'images' => ['nullable', 'array', 'max:'.(int) config('catalog.max_images')],
             'images.*' => [new ProductImageRule],
+            ...$this->stockRules(),
         ];
     }
 
@@ -52,6 +56,9 @@ class UpdateProductRequest extends FormRequest
             'description.required' => 'Informe a descrição.',
             'ingredients.required' => 'Informe os ingredientes.',
             'cover.required' => 'Escolha a foto de capa.',
+            'stock_units.integer' => 'Informe o estoque em unidades inteiras.',
+            'stock_units.min' => 'O estoque não pode ser negativo.',
+            'stock_units.max' => 'O estoque passa do limite de 100.000 unidades.',
         ];
     }
 
@@ -95,6 +102,8 @@ class UpdateProductRequest extends FormRequest
             } elseif (! preg_match('/^new:(\d+)$/', $cover, $matches) || (int) $matches[1] >= $newCount) {
                 $validator->errors()->add('cover', 'Escolha uma foto de capa que continue no produto.');
             }
+
+            $this->validateStock($validator, $product->id);
         });
     }
 

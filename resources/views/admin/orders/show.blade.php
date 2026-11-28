@@ -11,12 +11,28 @@
             <thead><tr><th>Produto</th><th>Quantidade</th><th>Preço unitário</th><th>Subtotal</th></tr></thead>
             <tbody>
                 @foreach ($order->items as $item)
-                    <tr><td>{{ $item->product_name }}</td><td>{{ $item->quantity }}</td><td>{{ \App\Support\Money::format($item->unit_price_cents) }}</td><td>{{ \App\Support\Money::format($item->total_cents) }}</td></tr>
+                    <tr>
+                        <td data-label="Produto">{{ $item->product_name }}</td>
+                        <td data-label="Quantidade">{{ $item->quantity }}</td>
+                        <td data-label="Preço unitário">{{ \App\Support\Money::format($item->unit_price_cents) }}</td>
+                        <td data-label="Subtotal">{{ \App\Support\Money::format($item->total_cents) }}</td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
     <p><strong>Total: {{ \App\Support\Money::format($order->total_cents) }}</strong></p>
+    @if ($order->stockMovements->isNotEmpty())
+        <h2>Unidades baixadas do estoque</h2>
+        <ul>
+            @foreach ($order->stockMovements as $movement)
+                <li>{{ $movement->units }} × {{ $movement->product->name ?? 'Produto removido' }}</li>
+            @endforeach
+        </ul>
+        @if ($order->stock_restored_at)
+            <p>Estoque devolvido em {{ $order->stock_restored_at->format('d/m/Y H:i') }}.</p>
+        @endif
+    @endif
     <p>Atendimento: {{ \App\Models\Order::FULFILLMENT[$order->fulfillment_status] }}</p>
     <p>Pagamento: {{ \App\Models\Order::PAYMENT[$order->payment_status] }}</p>
     @if ($order->paid_at)

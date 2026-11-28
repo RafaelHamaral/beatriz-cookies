@@ -13,6 +13,11 @@
             <p><a href="{{ route('catalog.category', $product->category) }}">{{ $product->category->name }}</a></p>
             <h1>{{ $product->name }}</h1>
             <p class="price">{{ $product->formattedPrice() }}</p>
+            @if ($product->components->isNotEmpty())
+                <p>Combo com @foreach ($product->components as $part){{ $loop->first ? '' : ', ' }}{{ $part->units }} × {{ $part->product->name }}@endforeach.</p>
+            @else
+                <p>{{ $product->stock_units }} {{ $product->stock_units === 1 ? 'unidade em estoque' : 'unidades em estoque' }}.</p>
+            @endif
             <p class="badge {{ $product->is_available ? 'badge--ok' : '' }}">
                 {{ $product->is_available ? 'Disponível' : 'Indisponível' }}
             </p>

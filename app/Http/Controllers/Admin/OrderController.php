@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Orders\OrderUpdateRequest;
 use App\Models\Order;
 use App\Services\AuditLogger;
+use App\Services\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -31,12 +32,12 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $this->authorize('view', $order);
-        return view('admin.orders.show', ['order' => $order->load('items', 'paidBy')]);
+        return view('admin.orders.show', ['order' => $order->load('items', 'paidBy', 'stockMovements.product')]);
     }
 
-    public function update(OrderUpdateRequest $request, Order $order)
+    public function update(OrderUpdateRequest $request, Order $order, Inventory $inventory)
     {
-        DB::transaction(function () use ($request, $order) {
+        DB::transaction(function () use ($request, $order, $inventory) {
             $locked = Order::whereKey($order->id)->lockForUpdate()->firstOrFail();
             if ($locked->version !== (int) $request->validated('version')) {
                 throw ValidationException::withMessages(['status' => 'Este pedido foi alterado por outro operador. Recarregue a página.']);
@@ -66,6 +67,9 @@ class OrderController extends Controller
                     throw ValidationException::withMessages(['status' => 'Etapa inválida. Siga a sequência de atendimento e confirme o pagamento antes de concluir.']);
                 }
                 $from = $locked->fulfillment_status;
+                if ($status === 'cancelled') {
+                    $inventory->restore($locked);
+                }
                 $locked->fulfillment_status = $status;
                 $action = 'order.fulfillment_changed';
             }

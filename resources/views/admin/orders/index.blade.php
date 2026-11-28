@@ -27,11 +27,11 @@
             <tbody>
                 @forelse ($orders as $order)
                     <tr>
-                        <td><a href="{{ route('orders.show', $order) }}">{{ $order->number }}</a><br>{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                        <td>{{ $order->customer_name }}</td>
-                        <td>{{ \App\Support\Money::format($order->total_cents) }}</td>
-                        <td>{{ \App\Models\Order::FULFILLMENT[$order->fulfillment_status] }}</td>
-                        <td>{{ \App\Models\Order::PAYMENT[$order->payment_status] }}</td>
+                        <td data-label="Pedido / data"><a href="{{ route('orders.show', $order) }}">{{ $order->number }}</a><br>{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                        <td data-label="Cliente">{{ $order->customer_name }}</td>
+                        <td data-label="Total">{{ \App\Support\Money::format($order->total_cents) }}</td>
+                        <td data-label="Atendimento">{{ \App\Models\Order::FULFILLMENT[$order->fulfillment_status] }}</td>
+                        <td data-label="Pagamento">{{ \App\Models\Order::PAYMENT[$order->payment_status] }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="5">Nenhum pedido encontrado.</td></tr>

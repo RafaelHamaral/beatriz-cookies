@@ -42,9 +42,9 @@
                 <tbody>
                     @foreach ($users as $user)
                         <tr>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>
+                            <td data-label="Nome">{{ $user->name }}</td>
+                            <td data-label="E-mail">{{ $user->email }}</td>
+                            <td data-label="Perfil">
                                 @if ($user->is(auth()->user()))
                                     {{ $user->role->value }}
                                 @else
@@ -60,7 +60,7 @@
                                     </form>
                                 @endif
                             </td>
-                            <td>
+                            <td class="row-actions" data-label="Ação">
                                 @if ($user->is(auth()->user()))
                                     Seu usuário
                                 @else

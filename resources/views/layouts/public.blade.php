@@ -3,28 +3,24 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @yield('head')
     <title>{{ $title ?? 'Beatriz & Kathy Cookies' }}</title>
     <link rel="stylesheet" href="{{ asset('css/store.css').'?v='.filemtime(public_path('css/store.css')) }}">
 </head>
 <body class="storefront">
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
     <header class="wrap site-header">
         <a class="brand" href="{{ route('home') }}">Beatriz <span>&amp;</span> Kathy<small>Cookies</small></a>
         <nav class="nav" aria-label="Navegação principal">
-            <a href="{{ route('home') }}">Início</a>
-            <a href="{{ route('home') }}#sobre">Sobre</a>
-            <a href="{{ route('cart.index') }}">Carrinho</a>
-            <a href="{{ route('catalog.index') }}">Catálogo</a>
-            <a href="{{ route('contact.create') }}">Contato</a>
-            <a href="{{ route('reviews.create') }}">Avaliar</a>
-            @auth
-                <a href="{{ route('dashboard') }}">Área restrita</a>
-                <form class="inline-form" method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="button--ghost" type="submit">Sair</button>
-                </form>
-            @else
-                <a href="{{ route('login') }}">Área da loja</a>
-            @endauth
+            <div class="nav-bar">
+                @include('partials.public-nav-links')
+            </div>
+            <details class="nav-disclosure">
+                <summary class="nav-toggle"><span class="nav-toggle__closed">Menu</span><span class="nav-toggle__open">Fechar</span></summary>
+                <div class="nav-links">
+                    @include('partials.public-nav-links')
+                </div>
+            </details>
         </nav>
     </header>
     <main class="wrap site-main" id="conteudo">

@@ -11,7 +11,7 @@ class ProductPageController extends Controller
 {
     public function __invoke(Product $product): View
     {
-        $product->load('category', 'images');
+        $product->load('category', 'images', 'components.product');
         abort_unless($product->isVisibleOnStore(), 404);
 
         return view('catalog.product', ['product' => $product]);

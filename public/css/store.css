@@ -36,28 +36,28 @@
     z-index: 10;
     display: flex;
     align-items: center;
-    gap: 1.25rem;
-    padding: 1rem max(1rem, calc((100vw - 1080px) / 2));
+    gap: 0.75rem;
+    padding: 0.75rem max(1rem, calc((100% - 1080px) / 2));
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
     background: var(--paper);
     box-shadow: 0 -4px 20px rgba(74, 44, 34, 0.08);
     font-size: 1rem;
-    max-height: 70dvh;
+    max-height: min(42dvh, 18rem);
     overflow-y: auto;
 }
 .cookie-notice__content { flex: 1; min-width: 0; }
-.cookie-notice h2 { font-size: 1.125rem; }
-.cookie-notice p { margin: 0.4rem 0 0; line-height: 1.45; }
+.cookie-notice h2 { font-size: 1rem; margin: 0; }
+.cookie-notice p { margin: 0.25rem 0 0; line-height: 1.35; }
 .cookie-notice form { flex-shrink: 0; margin: 0; }
 .cookie-notice button { min-height: 44px; }
-body:has(.cookie-notice) { padding-bottom: 16rem; }
+body:has(.cookie-notice) { padding-bottom: 14rem; }
 .cookie-notice :focus-visible, .site-footer a:focus-visible {
     outline: 3px solid var(--cocoa);
     outline-offset: 4px;
 }
 @media (max-width: 600px) {
-    body:has(.cookie-notice) { padding-bottom: 26rem; }
+    body:has(.cookie-notice) { padding-bottom: 20rem; }
     .cookie-notice { flex-direction: column; align-items: stretch; gap: 0.75rem; }
     .cookie-notice button { width: 100%; }
 }
@@ -81,6 +81,7 @@ a { color: var(--chocolate); }
 
 .site-header, .auth-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
@@ -530,4 +531,169 @@ th, td {
 .about-admin-gallery { display: flex; flex-wrap: wrap; gap: 1rem; }
 @media (prefers-reduced-motion: reduce) {
     .about-slides--animated .about-image { animation-name: about-step; animation-timing-function: steps(1, end); }
+}
+
+/* Fluid layout from a 320px phone through ultrawide screens. */
+html { overflow-x: clip; scroll-padding-bottom: 20rem; }
+img, svg, video { max-width: 100%; }
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    z-index: 30;
+    transform: translateY(-120%);
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--chocolate);
+    text-decoration: none;
+}
+.skip-link:focus { transform: none; }
+:focus-visible { outline: 3px solid var(--cocoa); outline-offset: 3px; }
+h1, h2, h3, p, li, td, th, label, .brand, .lede, .about-text { overflow-wrap: anywhere; }
+.wrap, .panel, .hero, .card, .product-card, .auth-card, .site-main { min-width: 0; max-width: 100%; }
+
+.nav { display: block; min-width: 0; }
+.nav-bar { display: none; }
+.nav-disclosure { min-width: 0; }
+.nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--chocolate);
+    font-family: "Avenir Next", "Segoe UI", sans-serif;
+    cursor: pointer;
+    list-style: none;
+}
+.nav-toggle::-webkit-details-marker { display: none; }
+.nav-toggle__open { display: none; }
+.nav-disclosure[open] .nav-toggle__closed { display: none; }
+.nav-disclosure[open] .nav-toggle__open { display: inline; }
+.nav-disclosure:not([open]) > .nav-links { display: none; }
+.nav-links { display: grid; gap: 0.25rem; padding-top: 0.75rem; }
+.nav-links a, .nav-links button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    justify-content: flex-start;
+    padding-inline: 0.9rem;
+    text-decoration: none;
+}
+.nav-links .inline-form { display: block; }
+.nav-links .notification-badge { margin-left: auto; }
+
+.button, button, .config-button, .nav-links a {
+    max-width: 100%;
+    min-height: 44px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+select, textarea { font-size: 1rem; min-height: 44px; max-width: 100%; }
+textarea { min-height: 7rem; }
+input, select, textarea, button, .button, summary { scroll-margin-bottom: 12rem; scroll-margin-top: 5rem; }
+
+.table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.table-wrap table { width: 100%; }
+.row-actions .inline-form { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.35rem 0 0; }
+@media (max-width: 720px) {
+    .table-wrap { overflow-x: visible; }
+    .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; width: 100%; }
+    .table-wrap thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .table-wrap tr { margin: 0 0 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--line); }
+    .table-wrap td { border: 0; padding: 0.35rem 0; }
+    .table-wrap td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 0.15rem;
+        color: var(--cocoa);
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        font-size: 0.75rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+}
+.inline-fields, .inline-filter, .mail-settings-actions, .review-moderation-card header, .section-heading, .footer-bottom { flex-wrap: wrap; }
+.inline-fields > *, .inline-filter select, .period-filter > div { min-width: 0; max-width: 100%; }
+.ranking li { display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline; }
+.ranking li span { width: auto; min-width: 0; flex: 1; }
+.ranking li strong { float: none; }
+.store-social-links { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; }
+.store-contact-details address { overflow-wrap: anywhere; }
+
+@media (max-width: 900px) {
+    .nav-links .button, .nav-links button { width: 100%; }
+}
+@media (max-width: 640px) {
+    .storefront .product-grid, .footer-grid, .review-grid, .contact-data { grid-template-columns: minmax(0, 1fr); }
+    .storefront .panel .button, .storefront .panel button[type="submit"], .auth-card button[type="submit"] { width: 100%; }
+    .nav-links .button, .nav-links button { width: 100%; }
+    .bar-chart__row { grid-template-columns: minmax(0, 1fr) auto; }
+    .bar-chart__track { grid-column: 1 / -1; }
+    .product-gallery__thumb { max-width: none; }
+    .section-heading, .footer-bottom { align-items: stretch; }
+}
+@media (min-width: 641px) and (max-width: 1023px) {
+    .storefront .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 901px) {
+    .storefront .site-header { flex-direction: row; align-items: center; justify-content: space-between; }
+    .storefront .nav { flex: 1 1 auto; }
+    .storefront .nav-disclosure { display: none; }
+    .storefront .nav-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.75rem 1rem;
+    }
+    .storefront .nav-bar a,
+    .storefront .nav-bar button {
+        flex: 0 0 auto;
+        width: auto;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--chocolate);
+        font-family: "Avenir Next", "Segoe UI", sans-serif;
+        font-size: 0.95rem;
+        line-height: 1.3;
+        text-align: left;
+        text-decoration: none;
+    }
+}
+@media (min-width: 1100px) {
+    .site-header { flex-direction: row; align-items: center; }
+    .nav--admin { flex: 1 1 20rem; }
+    .nav--admin .nav-disclosure { display: none; }
+    .nav--admin .nav-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 0.15rem 0.35rem;
+    }
+    .nav--admin .nav-bar a,
+    .nav--admin .nav-bar button,
+    .nav--admin .nav-bar .inline-form { flex: 0 0 auto; }
+    .nav--admin .nav-bar a,
+    .nav--admin .nav-bar button {
+        width: auto;
+        min-height: 44px;
+    }
+}
+@media (max-height: 500px) {
+    .cookie-notice { max-height: 42dvh; }
+    body:has(.cookie-notice) { padding-bottom: 44dvh; }
+    .storefront .site-header, .site-main { padding-block: 0.75rem; }
+}
+@media (min-width: 1440px) {
+    .storefront .wrap { width: min(1200px, calc(100% - 4rem)); }
 }

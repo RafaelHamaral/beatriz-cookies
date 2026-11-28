@@ -84,6 +84,10 @@ Após atualizar o código, execute `php artisan migrate` e `php artisan serve`.
 
 Pedidos preservam nome e preço unitário dos itens. O checkout recalcula tudo no servidor e exige nova revisão se o preço mudar. Uma chave única e bloqueio da sessão protegem contra reenvio duplicado. As alterações administrativas usam transação, bloqueio da linha e versão do pedido; formulários antigos são rejeitados. Pagamentos não podem ser confirmados duas vezes nem registrados em pedidos cancelados ou estornados.
 
+Com um WhatsApp válido cadastrado em **Contato da loja** (código do país, DDD e número, somente dígitos), o checkout mostra **Enviar pedido pelo WhatsApp**. Após salvar o pedido e registrar a notificação por e-mail, a confirmação abre a conversa automaticamente, uma única vez, com uma mensagem codificada a partir dos dados salvos: número do pedido, nome, produtos, quantidades, valores por unidade, subtotais, total e observações preenchidas. A mensagem só é enviada quando o cliente tocar em **Enviar** no WhatsApp. O botão **Abrir WhatsApp** na confirmação permite reabrir a conversa sem criar outro pedido. Sem número válido, o pedido é registrado normalmente e a confirmação informa a indisponibilidade do WhatsApp. Não são acrescentados campos de variações, entrega, retirada, endereço, frete ou forma de pagamento: o checkout atual não cadastra essas informações, que continuam sendo combinadas com a loja. O redirecionamento usa HTML, sem scripts ou alterações na política de segurança.
+
+`php artisan test --filter=CheckoutWhatsAppTest` verifica múltiplos itens, preços salvos, caracteres especiais, destinos ausentes/inválidos, privacidade da confirmação, abertura automática única, reabertura e preservação da notificação por e-mail.
+
 `php artisan test` verifica cálculos, preços alterados, disponibilidade, checkout duplicado, permissões, filtros, rollback, pagamento duplicado e versões desatualizadas. Os testes usam SQLite em memória; não simulam dois processos concorrentes no MySQL.
 
 ## Etapa 4 — dashboard, mensagens e avaliações

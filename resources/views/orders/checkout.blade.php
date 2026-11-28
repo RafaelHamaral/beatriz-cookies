@@ -15,7 +15,12 @@
             <input id="customer_phone" name="customer_phone" type="tel" autocomplete="tel" maxlength="30" value="{{ old('customer_phone') }}" required>
             <label for="notes">Observações (opcional)</label>
             <textarea id="notes" name="notes" maxlength="2000">{{ old('notes') }}</textarea>
-            <p><button type="submit">Enviar pedido · {{ \App\Support\Money::format($total) }}</button></p>
+            @if ($whatsappAvailable)
+                <p>Ao continuar, seu pedido será registrado e o WhatsApp será aberto com a mensagem pronta. Revise a mensagem e toque em “Enviar” no WhatsApp para enviá-la à loja.</p>
+            @else
+                <p>O WhatsApp da loja está indisponível no momento. Seu pedido será registrado normalmente e a loja poderá entrar em contato pelos dados informados.</p>
+            @endif
+            <p><button type="submit">{{ $whatsappAvailable ? 'Enviar pedido pelo WhatsApp' : 'Registrar pedido' }} · {{ \App\Support\Money::format($total) }}</button></p>
         </form>
         <a href="{{ route('cart.index') }}">Revisar carrinho</a>
     </section>

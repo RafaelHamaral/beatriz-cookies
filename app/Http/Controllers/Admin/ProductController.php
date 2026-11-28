@@ -27,7 +27,7 @@ class ProductController extends Controller
         $this->authorize('viewAny', Product::class);
 
         return view('admin.products.index', [
-            'products' => Product::query()->with('category')->orderBy('name')->get(),
+            'products' => Product::query()->with('category')->withCount('components')->orderBy('name')->get(),
         ]);
     }
 
@@ -37,6 +37,7 @@ class ProductController extends Controller
 
         return view('admin.products.create', [
             'categories' => Category::query()->orderBy('name')->get(),
+            'componentChoices' => $this->componentChoices(),
         ]);
     }
 
@@ -54,9 +55,11 @@ class ProductController extends Controller
                     'ingredients' => $request->string('ingredients')->toString(),
                     'allergens' => $request->string('allergens')->toString() ?: null,
                     'price_cents' => $request->priceCents(),
+                    'stock_units' => $request->stockUnits(),
                     'is_available' => $request->boolean('is_available'),
                     'is_active' => $request->boolean('is_active'),
                 ]);
+                $this->syncComponents($product, $request->comboRows());
 
                 $newIds = $this->storeUploads($product, $request->file('images', []), $storage, $written);
                 $this->assignCover($product, (string) $request->input('cover', 'new:0'), $newIds);
@@ -85,8 +88,9 @@ class ProductController extends Controller
         $this->authorize('view', $product);
 
         return view('admin.products.edit', [
-            'product' => $product->load('images'),
+            'product' => $product->load('images', 'components'),
             'categories' => Category::query()->orderBy('name')->get(),
+            'componentChoices' => $this->componentChoices($product),
         ]);
     }
 
@@ -104,9 +108,11 @@ class ProductController extends Controller
                     'ingredients' => $request->string('ingredients')->toString(),
                     'allergens' => $request->string('allergens')->toString() ?: null,
                     'price_cents' => $request->priceCents(),
+                    'stock_units' => $request->stockUnits(),
                     'is_available' => $request->boolean('is_available'),
                     'is_active' => $request->boolean('is_active'),
                 ])->save();
+                $this->syncComponents($product, $request->comboRows());
 
                 $removeIds = collect($request->input('remove', []))->map(fn ($id) => (int) $id)->all();
                 $dropping = $product->images()->whereIn('id', $removeIds)->get();
@@ -133,6 +139,7 @@ class ProductController extends Controller
         AuditLogger::record('product.updated', $product, [
             'name' => $product->name,
             'price_cents' => $product->price_cents,
+            'stock_units' => $product->stock_units,
             'is_active' => $product->is_active,
             'is_available' => $product->is_available,
         ]);
@@ -150,6 +157,26 @@ class ProductController extends Controller
         ]);
 
         return redirect()->route('products.index')->with('success', 'Produto atualizado.');
+    }
+
+    /**
+     * @param  list<array{product_id: int, units: int}>  $rows
+     */
+    private function syncComponents(Product $product, array $rows): void
+    {
+        $product->components()->delete();
+        foreach ($rows as $row) {
+            $product->components()->create($row);
+        }
+    }
+
+    private function componentChoices(?Product $except = null): mixed
+    {
+        return Product::query()
+            ->when($except, fn ($query) => $query->whereKeyNot($except->id))
+            ->whereDoesntHave('components')
+            ->orderBy('name')
+            ->get(['id', 'name']);
     }
 
     /**
